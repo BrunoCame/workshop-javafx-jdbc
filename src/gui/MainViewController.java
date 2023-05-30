@@ -34,12 +34,12 @@ public class MainViewController implements Initializable {
 	
 	@FXML
 	public void menuItemDepAct() {
-		System.out.println("AçãoDep");	
+		loadView("/gui/ListaDepartamento.fxml");	
 	}
 	
 	@FXML
 	public void menuItemSobreAct() {
-		loadAbout("/gui/About.fxml");	
+		loadView("/gui/About.fxml");	
 	}
 	
 	
@@ -48,7 +48,7 @@ public class MainViewController implements Initializable {
 			
 	}
 	
-	private synchronized void loadAbout(String absoluteName) {
+	private synchronized void loadView(String absoluteName) {
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
