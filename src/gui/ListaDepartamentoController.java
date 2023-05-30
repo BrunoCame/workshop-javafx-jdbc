@@ -52,7 +52,7 @@ public class ListaDepartamentoController implements Initializable {
 
 	private void initializeNode() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
-		tableColumnNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		tableColumnNome.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewDepart.prefWidthProperty().bind(stage.heightProperty());
