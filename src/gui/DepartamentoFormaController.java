@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listener.DataChangeListener;
@@ -17,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Departamento;
+import model.exceptions.ValidacaoExcessao;
 import model.service.DepartamentoService;
 
 public class DepartamentoFormaController implements Initializable {
@@ -34,7 +37,7 @@ public class DepartamentoFormaController implements Initializable {
 	private TextField textNome;
 	
 	@FXML
-	private Label error;
+	private Label labelError;
 	
 	@FXML
 	private Button salvar;
@@ -73,7 +76,10 @@ public class DepartamentoFormaController implements Initializable {
 		}
 		catch(DbException e) {
 			Alerts.showAlerts("Erro ao salvar objeto", null, e.getMessage(), AlertType.ERROR);
-		}	
+		}
+		catch(ValidacaoExcessao e) {
+			setErrorMessage(e.getErrors());
+		}
 	}
 	
 	private void notificarDataChange() {
@@ -85,8 +91,19 @@ public class DepartamentoFormaController implements Initializable {
 
 	private Departamento getFormData() {
 		Departamento obj = new Departamento();
+		
+		ValidacaoExcessao excessao = new ValidacaoExcessao("Erro ao validar");
+		
 		obj.setId(Utils.tryParseToInt(textId.getText()));
+		
+		if(textNome.getText() == null || textNome.getText().trim().equals("")) {
+			excessao.addErrors("nome", "Obrigatório");
+		}
 		obj.setName(textNome.getText());
+		
+		if(excessao.getErrors().size() > 0) {
+			throw excessao;
+		}
 		
 		return obj;
 	}
@@ -94,6 +111,15 @@ public class DepartamentoFormaController implements Initializable {
 	@FXML
     public void btCancelarACT(ActionEvent event) {
 		Utils.currentStage(event).close();
+	}
+	
+	@FXML
+	public void setErrorMessage(Map<String, String> error) {
+		Set<String> campo = error.keySet();
+		
+		if(campo.contains("nome")) {
+			labelError.setText(error.get("nome"));
+		}	
 	}
 	
 	

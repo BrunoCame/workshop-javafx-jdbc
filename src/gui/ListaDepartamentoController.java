@@ -9,6 +9,7 @@ import application.Main;
 import gui.listener.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -42,6 +44,9 @@ public class ListaDepartamentoController implements Initializable, DataChangeLis
 	
 	@FXML
 	private TableColumn<Departamento, String> tableColumnNome;
+	
+	@FXML
+	private TableColumn<Departamento, Departamento> tableColumnEdit;
 	
 	private ObservableList<Departamento> obsList;
 	
@@ -76,7 +81,8 @@ public class ListaDepartamentoController implements Initializable, DataChangeLis
 		}
 		List<Departamento> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
-		tableViewDepart.setItems(obsList);	
+		tableViewDepart.setItems(obsList);
+		initEditButtons();
 	}
 	
 	private void createDialogMode(Departamento obj, String absoluteName, Stage parentStage) {
@@ -109,5 +115,23 @@ public class ListaDepartamentoController implements Initializable, DataChangeLis
 		updateTableView();
 		
 	}
+	
+	private void initEditButtons() {
+	    tableColumnEdit.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+	    tableColumnEdit.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+	        private final Button button = new Button("editar");
 
+	        @Override
+	        protected void updateItem(Departamento obj, boolean empty) {
+	            super.updateItem(obj, empty);
+
+	            if (obj == null) {
+	                setGraphic(null);
+	                return;
+	            }
+	            setGraphic(button);
+	            button.setOnAction(evento -> createDialogMode(obj, "/gui/DepartamentoForm.fxml", Utils.currentStage(evento)));
+	        }
+	    });
+	}
 }
